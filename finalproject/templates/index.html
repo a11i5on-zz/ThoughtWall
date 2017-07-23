@@ -1,0 +1,276 @@
+<!-- Based on JavaScript HTML5 Canvas example by Dan Gries (movable shapes on Canvas), rectangleworld.com --> 
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+<!--Specify that this page uses styles.css -->
+{% block css %}
+<link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block main %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+
+<style type="text/css">
+	h4 {font-family: sans-serif;}
+	h3 {font-family: sans-serif;}
+	p {font-family: sans-serif;}
+	a {font-family: sans-serif; color:#d15423; text-decoration:none;}
+</style>
+
+<script src="static/modernizr-2.0.6.js"></script>
+<script src = "static/SimpleDiskParticle.js"></script>
+<script src = "static/SimpleSquareParticle.js"></script>
+
+<script type="text/javascript">
+
+window.addEventListener("load", windowLoadHandler, false);
+
+//For debug messages
+var Debugger = function() { };
+Debugger.log = function(message) {
+	try {
+		console.log(message);
+	}
+	catch (exception) {
+		return;
+	}
+}
+
+function windowLoadHandler() {
+	canvasApp();
+}
+
+function canvasSupport() {
+	return Modernizr.canvas;
+}
+
+function canvasApp() {
+	if (!canvasSupport()) {
+		return;
+	}
+	
+	var theCanvas = document.getElementById("canvasOne");
+	var context = theCanvas.getContext("2d");
+	
+	init();
+	var numShapes;
+	var shapes;
+	var dragIndex;
+	var dragging;
+	var mouseX;
+	var mouseY;
+	var dragHoldX;
+	var dragHoldY;
+	var timer;
+	var targetX;
+	var targetY;
+	var easeAmount;
+	
+	function init() {
+	    
+	    // Number of shapes = number of posts inputted
+		numShapes = '{{ post_count }}';
+		
+		easeAmount = 0.45;
+		
+		shapes = [];
+		
+		makeShapes();
+		
+		drawScreen();
+		
+		theCanvas.addEventListener("mousedown", mouseDownListener, false);
+	}
+	
+	function makeShapes() {
+		var i;
+		var tempX;
+		var tempY;
+		var tempRad;
+		var tempR;
+		var tempG;
+		var tempB;
+		var tempA;
+		var tempColor;
+		for (i=0; i < numShapes; i++) {
+			
+			// jsonify necessary info and store it in variables
+			text = {{ listofposts|tojson|safe }};
+			title = {{ listoftitles|tojson|safe }};
+			person = {{ listofnames|tojson|safe }};
+			address = {{ listofemails|tojson|safe }};
+			post_len = {{ post_length|tojson|safe }};			
+			
+			// The radius of the shape directly correlated to the length of the post.
+			tempRad = 100 + 0.3*post_len[i];			
+			
+			// Randomly places the shapes in the x-axis
+			tempX = Math.random()*(theCanvas.width - 2*tempRad) + tempRad;
+			
+			// For y-axis, Y position moves downward at an interval of 200 pixels.
+			tempY = 300 + 200*i
+			
+			//we set a randomized color, including a random alpha (transparency) value.
+			//The color is set using the rgba() method.
+			tempR = Math.floor(Math.random()*255);
+			tempG = Math.floor(Math.random()*255);
+			tempB = Math.floor(Math.random()*255);
+			tempA = 0.3 + 0.5*Math.random();
+			tempColor = "rgba(" + tempR + "," + tempG + "," + tempB + "," + tempA + ")";
+			
+			//randomly select either a circle or a square as post's background
+			if (Math.random() < 0.5) {
+				tempShape = new SimpleDiskParticle(tempX, tempY, text[i], title[i], person[i], address[i], post_len[i], tempRad);
+			}
+			else {
+				tempShape = new SimpleSquareParticle(tempX, tempY, text[i], title[i], person[i], address[i], post_len[i], tempRad);
+			}
+			
+			tempShape.color = tempColor;
+			tempShape.radius = tempRad;
+			
+			shapes.push(tempShape);
+		}
+	}
+	
+	function mouseDownListener(evt) {
+		var i;
+		
+		//getting mouse position correctly 
+		var bRect = theCanvas.getBoundingClientRect();
+		mouseX = (evt.clientX - bRect.left)*(theCanvas.width/bRect.width);
+		mouseY = (evt.clientY - bRect.top)*(theCanvas.height/bRect.height);
+				
+		/*
+		Below, we find if a shape was clicked. Since a "hit" on a square or a circle has to be measured differently, the
+		hit test is done using the hitTest() function associated to the type of particle. This function is an instance method
+		for both the SimpleDiskParticle and SimpleSqureParticle classes we have defined with the external JavaScript sources.		
+		*/
+		for (i=0; i < numShapes; i++) {
+			if (shapes[i].hitTest(mouseX, mouseY)) {	
+				dragging = true;
+				//the following variable will be reset if this loop repeats with another successful hit:
+				dragIndex = i;
+			}
+		}
+		
+		if (dragging) {
+			window.addEventListener("mousemove", mouseMoveListener, false);
+			
+			//place currently dragged shape on top
+			shapes.push(shapes.splice(dragIndex,1)[0]);
+			
+			//shapeto drag is now last one in array
+			dragHoldX = mouseX - shapes[numShapes-1].x;
+			dragHoldY = mouseY - shapes[numShapes-1].y;
+			
+			//The "target" position is where the object should be if it were to move there instantaneously. But we will
+			//set up the code so that this target position is approached gradually, producing a smooth motion.
+			targetX = mouseX - dragHoldX;
+			targetY = mouseY - dragHoldY;
+			
+			//start timer
+			timer = setInterval(onTimerTick, 1000/30);
+		}
+		theCanvas.removeEventListener("mousedown", mouseDownListener, false);
+		window.addEventListener("mouseup", mouseUpListener, false);
+		
+		//code below prevents the mouse down from having an effect on the main browser window:
+		if (evt.preventDefault) {
+			evt.preventDefault();
+		} //standard
+		else if (evt.returnValue) {
+			evt.returnValue = false;
+		} //older IE
+		return false;
+	}
+	
+	function onTimerTick() {
+		//because of reordering, the dragging shape is the last one in the array.
+		shapes[numShapes-1].x = shapes[numShapes-1].x + easeAmount*(targetX - shapes[numShapes-1].x);
+		shapes[numShapes-1].y = shapes[numShapes-1].y + easeAmount*(targetY - shapes[numShapes-1].y);
+		
+		//stop the timer when the target position is reached (close enough)
+		if ((!dragging)&&(Math.abs(shapes[numShapes-1].x - targetX) < 0.1) && (Math.abs(shapes[numShapes-1].y - targetY) < 0.1)) {
+			shapes[numShapes-1].x = targetX;
+			shapes[numShapes-1].y = targetY;
+			//stop timer:
+			clearInterval(timer);
+		}
+		drawScreen();
+	}
+	
+	function mouseUpListener(evt) {
+		theCanvas.addEventListener("mousedown", mouseDownListener, false);
+		window.removeEventListener("mouseup", mouseUpListener, false);
+		if (dragging) {
+			dragging = false;
+			window.removeEventListener("mousemove", mouseMoveListener, false);
+		}
+	}
+
+	function mouseMoveListener(evt) {
+		var posX;
+		var posY;
+		var shapeRad = shapes[numShapes-1].radius;
+		var minX = shapeRad;
+		var maxX = theCanvas.width - shapeRad;
+		var minY = shapeRad;
+		var maxY = theCanvas.height - shapeRad;
+		
+		//getting mouse position correctly 
+		var bRect = theCanvas.getBoundingClientRect();
+		mouseX = (evt.clientX - bRect.left)*(theCanvas.width/bRect.width);
+		mouseY = (evt.clientY - bRect.top)*(theCanvas.height/bRect.height);
+		
+		//clamp x and y positions to prevent object from dragging outside of canvas
+		posX = mouseX - dragHoldX;
+		posX = (posX < minX) ? minX : ((posX > maxX) ? maxX : posX);
+		posY = mouseY - dragHoldY;
+		posY = (posY < minY) ? minY : ((posY > maxY) ? maxY : posY);
+		
+		targetX = posX;
+		targetY = posY;
+	}
+		
+	function drawShapes() {
+		var i;
+		for (i = 0; i < numShapes; i++) {
+			//the drawing of the shape is handled by a function inside the external class.
+			//we must pass as an argument the context to which we are drawing the shape.
+			shapes[i].drawToContext(context);
+		}
+	}
+	
+	function drawScreen() {
+		// we can change the background here but I think we should make it transparent
+		context.fillStyle = "#000000"; 
+		context.fillRect(0,0,theCanvas.width,theCanvas.height);
+		drawShapes();
+	}
+	
+}
+
+</script>
+
+</head>
+<body>
+<div style="top: 50px; text-align:center">
+<canvas id="canvasOne" width="900" height='{{ canvas_length }}'>
+Your browser does not support HTML5 canvas.
+</canvas>
+<p>Drag the shapes with the mouse.</p>
+</div>
+</body>
+</html>
+
+{% endblock %}

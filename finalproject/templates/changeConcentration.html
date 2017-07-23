@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Change Concentration
+{% endblock %}
+
+{% block css %}
+<link href="{{ url_for('static', filename='styles2.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block main %}
+    <script type="text/javascript">
+    // function that helps dynamically change the second drop-down depending on what is selected in the first drop-down
+    function listConfiguration2(area, concentration) {
+    var artHum = ['Classics', 'Comparative Literature', 'East Asian Studies', 'English', 'Folklore and Mythology', 'Germanic Languages and Literatures', 'History and Literature', 'History of Art and Architecture', 'Linguistics', 'Music', 'Near Eastern Languages and Civilizations', 'Philosophy', 'Comparative Study of Religion', 'Romance Languages and Literatures', 'Slavic Literatures and Cultures', 'South Asian Studies', 'Special Concentrations', 'Theater, Dance, and Media', 'Visual and Environmental Studies'];
+    var sci = ['Astrophysics', 'Chemical and Physical Biology', 'Chemistry', 'Chemistry and Physics', 'Earth & Planetary Sciences', 'Environmental Science and Public Policy', 'Human Development and Regenerative Biology', 'Human Evolutionary Biology', 'Integrative Biology', 'Mathematics', 'Molecular and Cellular Biology', 'Neurobiology', 'Physics', 'Statistics'];
+    var socSci = ['African and African American Studies', 'Anthropology', 'Economics', 'Government', 'History', 'History and Science', 'Psychology', 'Social Studies', 'Sociology', 'Women, Gender and Sexuality Studies'];
+    var eng = ['Applied Mathematics', 'Biomedical Engineering', 'Computer Science', 'Electrical Engineering', 'Engineering Sciences', 'Mechanical Engineering']; 
+    var other = ['Special Concentration', 'Undeclared']
+    
+    // depending on the first drop-down selection, a different set of option objects are created
+    switch (area.value) {
+        case 'Arts and Humanities':
+            concentration.options.length = 0; 
+            createOption(concentration, artHum);
+            break;
+        case 'Science':
+            concentration.options.length = 0; 
+            createOption(concentration, sci);
+            break;
+        case 'Social Science':
+            concentration.options.length = 0; 
+            createOption(concentration, socSci);
+            break;
+        case 'Engineering and Applied Sciences':
+            concentration.options.length = 0; 
+            createOption(concentration, eng);
+            break; 
+        case 'Other': 
+            concentration.options.length = 0; 
+            createOption(concentration, other);
+            break; 
+        default: 
+            concentration.options.length = 0;
+            break;
+    }
+
+}
+    // function that generates HTML DOM Option objects from a list
+    function createOption(list, values) {
+        var numofvals = values.length; 
+        for (i = 0; i < numofvals; i++) {
+            var opt = document.createElement('option');
+            opt.value = values[i];
+            opt.text = values[i];
+            list.options.add(opt);
+        }
+    }
+    </script>
+    <form action="{{ url_for('changeConcentration') }}" method="post">
+        <fieldset>
+            <div>
+                <!-- the first drop-down menu --> 
+                <select class="selectpicker" name="area" onchange="listConfiguration2(this,document.getElementById('concentration'))">
+                <option value=""></option>
+                <option value="Arts and Humanities" data-icon="glyphicon-text-background">Arts and Humanities</option>
+                <option value="Science" data-icon="glyphicon-search">Science</option>
+                <option value="Social Science" data-icon="glyphicon-user">Social Science</option>
+                <option value="Engineering and Applied Sciences" data-icon="glyphicon-cog">Engineering and Applied Sciences</option>
+                <option value="Other">Other</option>
+                </select>
+                
+                <!-- the second drop-down menu --> 
+                <select class="styled-select" id="concentration" name="concentration">
+                </select>
+            </div>
+            <br></br>
+            <div class="form-group">
+                <button class="btn btn-default" type="submit">Submit Changes</button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

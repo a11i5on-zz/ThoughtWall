@@ -1,0 +1,32 @@
+ThoughtWall 
+Brandon Hills ('20) and Allison Lee ('20) 
+CS50 Fall 2016 Final Project
+======================================================
+
+ThoughtWall is a website meant to be a space for Harvard College undergraduates to express their ideas and get to know each other.
+Users (after registering under a @college.harvard.edu email address) will be able to post content to various ThoughtWalls within the
+website. Each user will have access to 4 ThoughtWalls: the general ThoughtWall (accessible to all Harvard College users), their 
+year's ThoughtWall (accessible to only those in the user's graduation class), their house's ThoughtWall (accessible to only those in 
+their house), and their concentration's ThoughtWall. For each post on a wall, the poster's email address and name are displayed so 
+that users can contact each other easily. 
+
+Features
+=============
+Users can: 
+- Register an account, but only under an @college.harvard.edu email address 
+- Post content (max. length 500 characters) to any wall the user can access
+- Drag around and reorganize posts on a ThoughtWall in any order they would like 
+- Change their personal account settings (house, concentration, password)
+- Remove one's own previously created posts from any wall (listed as an option under the "Settings" tab)
+
+How To Use*  
+=============
+- ThoughtWall has been created inside the CS50 IDE. 
+- Just cd into finalproject, run Flask with the command "flask run", and select CS50 IDE > Web Server. 
+
+* If this project became a permanent website, users would have access to the permanent URL (and contribute to the same 
+database); however, our present implementation method will not result in users contributing to the same database, unless
+they are working from a shared IDE.
+
+
+

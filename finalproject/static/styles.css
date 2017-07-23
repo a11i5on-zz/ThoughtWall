@@ -1,0 +1,61 @@
+/* This is the css file for the crimson-background pages; adapted from CS50 Finance styles.css file */ 
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #DCDCDC; 
+}
+
+.container
+{
+    /* center contents */
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* colors for navbar */
+.navbar-default .navbar-brand .crimson
+{
+    color: #990000;
+}
+
+/* colors for navbar background */
+.navbar-default {
+  background-color: #E7E7E7;
+  border-color: #990000;
+ }
+
+
+main .form-control
+{
+    /* center form controls */
+    display: inline-block;
+
+    /* override Bootstrap's 100% width for form controls */
+    width: auto;
+}
+
+main img
+{
+    /* constrain images on small screens */
+    max-width: 100%;
+}
+
+main td
+{
+    /* left-align tables' cells */
+    text-align: left;
+}
+
+
+body {
+    /* Makes the background image, centered and full screen */
+    background-color: darkred;
+    background-position: center top;
+    background-size: 100% auto;
+}
+
+.alert {
+    background-color: #A8A8A8;
+    color: #000000;
+    border-color: #000000;
+}

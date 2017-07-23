@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block css %}
+<link href="{{ url_for('static', filename='styles2.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block main %}
+    <script type="text/javascript">
+    // function that helps dynamically change the second drop-down depending on what is selected in the first drop-down
+    function listConfiguration(year, house) {
+    var freshmenhousing = ['Greenough', 'Hurlbut', 'Pennypacker', 'Wigglesworth', 'Grays', 'Matthews', 'Weld', 'Apley', 'Hollis', 'Holworthy', 'Lionel', 'Mass Hall', 'Mower', 'Stoughton', 'Straus', 'Canaday', 'Thayer'];
+    var upperclassmenhousing = ['Adams', 'Cabot', 'Currier', 'Dudley', 'Dunster', 'Eliot', 'Kirkland', 'Leverett', 'Lowell', 'Mather', 'Pforzheimer', 'Quincy', 'Winthrop'];
+
+    // depending on the first drop-down selection, a different set of option objects are created
+    switch (year.value) {
+        case '2020':
+            house.options.length = 0; 
+            createOption(house, freshmenhousing);
+            break;
+        default: 
+            house.options.length = 0; 
+            createOption(house, upperclassmenhousing);
+            break;
+    }
+
+}
+    // function that helps dynamically change the second drop-down depending on what is selected in the first drop-down
+    function listConfiguration2(area, concentration) {
+    var artHum = ['Classics', 'Comparative Literature', 'East Asian Studies', 'English', 'Folklore and Mythology', 'Germanic Languages and Literatures', 'History and Literature', 'History of Art and Architecture', 'Linguistics', 'Music', 'Near Eastern Languages and Civilizations', 'Philosophy', 'Comparative Study of Religion', 'Romance Languages and Literatures', 'Slavic Literatures and Cultures', 'South Asian Studies', 'Theater, Dance, and Media', 'Visual and Environmental Studies'];
+    var sci = ['Astrophysics', 'Chemical and Physical Biology', 'Chemistry', 'Chemistry and Physics', 'Earth & Planetary Sciences', 'Environmental Science and Public Policy', 'Human Development and Regenerative Biology', 'Human Evolutionary Biology', 'Integrative Biology', 'Mathematics', 'Molecular and Cellular Biology', 'Neurobiology', 'Physics', 'Statistics'];
+    var socSci = ['African and African American Studies', 'Anthropology', 'Economics', 'Government', 'History', 'History and Science', 'Psychology', 'Social Studies', 'Sociology', 'Women, Gender and Sexuality Studies'];
+    var eng = ['Applied Mathematics', 'Biomedical Engineering', 'Computer Science', 'Electrical Engineering', 'Engineering Sciences', 'Mechanical Engineering']; 
+    var other = ['Special Concentration', 'Undeclared'];
+    
+    // depending on the first drop-down selection, a different set of option objects are created
+    switch (area.value) {
+        case 'Arts and Humanities':
+            concentration.options.length = 0; 
+            createOption(concentration, artHum);
+            break;
+        case 'Science':
+            concentration.options.length = 0; 
+            createOption(concentration, sci);
+            break;
+        case 'Social Science':
+            concentration.options.length = 0; 
+            createOption(concentration, socSci);
+            break;
+        case 'Engineering and Applied Sciences':
+            concentration.options.length = 0; 
+            createOption(concentration, eng);
+            break; 
+        case 'Other': 
+            concentration.options.length = 0; 
+            createOption(concentration, other);
+            break; 
+        default: 
+            concentration.options.length = 0;
+            break;
+    }
+
+}
+    // function that generates a list of HTML DOM Option objects from a list
+    function createOption(list, values) {
+        var numofvals = values.length; 
+        for (i = 0; i < numofvals; i++) {
+            var opt = document.createElement('option');
+            opt.value = values[i];
+            opt.text = values[i];
+            list.options.add(opt);
+        }
+    }
+    </script>
+    <form action="{{ url_for('register') }}" method="post">
+        <fieldset>
+            <div class="form-group">
+                <input class="form-control" name="name" placeholder="First and Last Name" type="text"/>
+            </div>
+            <div class="form-group">
+                <input autocomplete="off" autofocus class="form-control" name="email" placeholder="College Email" type="text"/>
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="password" placeholder="Password" type="password"/>
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="retypedPass" placeholder="Retyped password" type="password"/>
+            </div>
+            
+            <div>
+                <select class = "selectpicker" name="year" onchange="listConfiguration(this,document.getElementById('house'))">
+                <option value=""></option>
+                <option value="2017" data-icon="glyphicon-education">2017</option>
+                <option value="2018" data-icon="glyphicon-education">2018</option>
+                <option value="2019" data-icon="glyphicon-education">2019</option>
+                <option value="2020" data-icon="glyphicon-education">2020</option>
+                </select>
+
+                <select class = "styled-select" id="house" name="house">
+                </select>
+            </div>
+            <br></br>
+            
+            <div>
+                <select class="selectpicker" name="area" onchange="listConfiguration2(this,document.getElementById('concentration'))">
+                <option value=""></option>
+                <option value="Arts and Humanities" data-icon="glyphicon-text-background">Arts and Humanities</option>
+                <option value="Science" data-icon="glyphicon-search">Science</option>
+                <option value="Social Science" data-icon="glyphicon-user">Social Science</option>
+                <option value="Engineering and Applied Sciences" data-icon="glyphicon-cog">Engineering and Applied Sciences</option>
+                <option value="Other">Other</option>
+                </select>
+
+                <select class="styled-select" id="concentration" name="concentration">
+                </select>
+            </div>
+            
+            <br></br>
+            <div class="form-group">
+                <button class="btn btn-default" type="submit">Register</button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

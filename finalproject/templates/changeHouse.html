@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Change Year and House
+{% endblock %}
+
+{% block css %}
+<link href="{{ url_for('static', filename='styles2.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block main %}
+    <script type="text/javascript">
+    // function that helps dynamically change the second drop-down depending on what is selected in the first drop-down
+    function listConfiguration(year, house) {
+    var freshmenhousing = ['Greenough', 'Hurlbut', 'Pennypacker', 'Wigglesworth', 'Grays', 'Matthews', 'Weld', 'Apley', 'Hollis', 'Holworthy', 'Lionel', 'Mass Hall', 'Mower', 'Stoughton', 'Straus', 'Canaday', 'Thayer'];
+    var upperclassmenhousing = ['Adams', 'Cabot', 'Currier', 'Dudley', 'Dunster', 'Eliot', 'Kirkland', 'Leverett', 'Lowell', 'Mather', 'Pforzheimer', 'Quincy', 'Winthrop'];
+    
+    // depending on the first drop-down selection, a different set of option objects are created
+    switch (year.value) {
+        case 'freshman':
+            house.options.length = 0; 
+            createOption(house, freshmenhousing);
+            break;
+        default: 
+            house.options.length = 0; 
+            createOption(house, upperclassmenhousing);
+            break;
+        }
+
+    }
+    
+    // function that generates HTML DOM Option objects from a list
+    function createOption(list, values) {
+        var numofvals = values.length; 
+        for (i = 0; i < numofvals; i++) {
+            var opt = document.createElement('option');
+            opt.value = values[i];
+            opt.text = values[i];
+            list.options.add(opt);
+        }
+    }
+    </script>
+    <form action="{{ url_for('changeHouse') }}" method="post">
+        <fieldset>
+            <div>
+                <!-- the first drop-down menu --> 
+                <select class="selectpicker" name="year" onchange="listConfiguration(this,document.getElementById('house'))">
+                <option value=""></option>
+                <option value="freshman" data-icon="glyphicon-home">Freshmen Housing</option>
+                <option value="upperclassmen" data-icon="glyphicon-home">Upperclassmen Housing</option>
+                </select>
+                
+                <!-- the second drop-down menu --> 
+                <select class = "styled-select" id="house" name="house">
+                </select>
+                
+            </div>
+            <br></br>
+            <div class="form-group">
+                <button class="btn btn-default" type="submit">Submit Changes</button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

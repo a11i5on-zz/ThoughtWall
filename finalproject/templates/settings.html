@@ -1,0 +1,17 @@
+{% extends "layout.html" %} 
+
+{% block title %}
+    Settings
+{% endblock %}
+
+{% block css %}
+<link href="{{ url_for('static', filename='styles2.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block main %}
+<center></center><font size="6"><b>Welcome to your settings. Would you like to: </b></font></center>
+<center><font size="4"><a href="http://ide50-allison-lee.cs50.io/changeHouse">Change your house</a></font></center>
+<center><font size="4"><a href="http://ide50-allison-lee.cs50.io/changeConcentration">Change your concentration</a></font></center>
+<center><font size="4"><a href="http://ide50-allison-lee.cs50.io/changePassword">Change your password</a></font></center>
+<center><font size="4"><a href="http://ide50-allison-lee.cs50.io/remove">Remove a post</a></font></center>
+{% endblock %}
